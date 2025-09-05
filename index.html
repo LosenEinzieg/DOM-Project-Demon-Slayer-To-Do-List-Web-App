@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demon Slayer Todo List</title>
+    
+    <!-- Tailwind CSS  -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'demon-red': '#8B0000',
+                        'slayer-blue': '#1E3A8A',
+                        'bamboo-green': '#22543D',
+                        'flame-orange': '#EA580C',
+                        'night-purple': '#4C1D95'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Styles and Animations -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .breathing-glow {
+            animation: breathe 2s ease-in-out infinite alternate;
+        }
+        @keyframes breathe {
+            0% { box-shadow: 0 0 20px rgba(234, 88, 12, 0.3); }
+            100% { box-shadow: 0 0 30px rgba(234, 88, 12, 0.6); }
+        }
+        .task-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-900 via-night-purple to-gray-800 min-h-screen text-white">
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-flame-orange mb-2">
+                鬼滅の刃
+            </h1>
+            <h2 class="text-xl md:text-2xl text-gray-300 mb-4">Demon Slayer To Do List</h2>
+            <div class="w-24 h-1 bg-gradient-to-r from-demon-red to-flame-orange mx-auto breathing-glow"></div>
+        </header>
+
+        <!-- Task Input Section -->
+        <section class="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 mb-8 border border-gray-700">
+            <h3 class="text-xl font-semibold mb-4 text-flame-orange">Add New Mission</h3>
+            <form id="todoForm" class="space-y-4">
+
+                <!-- Task Description Input -->
+                <div>
+                    <label for="taskInput" class="block text-sm font-medium text-gray-300 mb-2">
+                        Mission Description
+                    </label>
+                    <input 
+                        type="text" 
+                        id="taskInput" 
+                        placeholder="Enter your mission..."
+                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-flame-orange focus:border-transparent text-white placeholder-gray-400"
+                        required
+                    >
+                    <div id="taskError" class="text-demon-red text-sm mt-1 hidden"></div>
+                </div>
+                
+                <!-- Due Date Input -->
+                <div>
+                    <label for="dateInput" class="block text-sm font-medium text-gray-300 mb-2">
+                        Due Date
+                    </label>
+                    <input 
+                        type="date" 
+                        id="dateInput"
+                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-flame-orange focus:border-transparent text-white" style= "color-scheme: dark;" required >
+                    <div id="dateError" class="text-demon-red text-sm mt-1 hidden"></div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button 
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-flame-orange to-demon-red hover:from-demon-red hover:to-flame-orange text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
+                >
+                    ⚔️ Add Mission
+                </button>
+            </form>
+        </section>
+
+        <!-- Filter Controls Section -->
+        <nav class="flex flex-wrap gap-2 mb-6 justify-center" aria-label="Task filters">
+            <button onclick="window.todoApp.filterTasks('all')" class="filter-btn active bg-slayer-blue hover:bg-blue-700 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                All Missions
+            </button>
+            <button onclick="window.todoApp.filterTasks('active')" class="filter-btn bg-bamboo-green hover:bg-green-700 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                Active
+            </button>
+            <button onclick="window.todoApp.filterTasks('completed')" class="filter-btn bg-yellow-700 hover:bg-yellow-500 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                Completed
+            </button>
+        </nav>
+
+        <!-- Statistics Section -->
+        <section class="grid grid-cols-3 gap-2 sm:gap-4 mb-6" aria-label="Task statistics">
+            <!-- Total Tasks Counter -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 text-center border border-gray-700">
+                <div class="text-2xl font-bold text-flame-orange" id="totalTasks">0</div>
+                <div class="text-gray-400">Total Missions</div>
+            </div>
+            <!-- Active Tasks Counter -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 text-center border border-gray-700">
+                <div class="text-2xl font-bold text-green-200" id="activeTasks">0</div>
+                <div class="text-gray-400">Active</div>
+            </div>
+            <!-- Completed Tasks Counter -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 text-center border border-gray-700">
+                <div class="text-2xl font-bold text-yellow-200" id="completedTasks">0</div>
+                <div class="text-gray-400">Completed</div>
+            </div>
+        </section>
+
+        <!-- Task List Section -->
+        <main class="bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-gray-700">
+            <h3 class="text-lg sm:text-xl font-semibold mb-4 text-flame-orange">Mission List</h3>
+            <div id="todoList" class="space-y-3">
+                <!-- Empty State -->
+                <div id="emptyState" class="text-center py-8 text-gray-400">
+                    <div class="text-4xl mb-2">⚔️</div>
+                    <p>No missions assigned yet. Add your first mission above!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- External JavaScript file -->
+    <script src="js/script.js"></script>
+</body>
+</html>
